@@ -9,6 +9,8 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Post;
 use App\Tag;
+use App\PostTag;
+use Auth;
 
 class AdminController extends Controller
 {
@@ -36,6 +38,26 @@ class AdminController extends Controller
         $post->content     = $request->input('content');
         $post->status      = $request->input('status');
         $post->slug        = Str::slug($request->input('title') . '-' . time());
+        $post->user_id     = Auth::user()->id;
+        // if (count($request->input('tags')) > 0) {
+        //     foreach ($request->input('tags') as $key => $tag) {
+        //         $flag = Tag::where('name',$tag)->first();
+        //         if (!$flag) {
+        //             $tag = Tag::create([
+        //                 'name' => $tag
+        //             ]);
+
+        //         }
+        //     }
+        // }
+        // upload hình ảnh
+        $image = $request->file('image');
+        $filename = time() . $image->getClientOriginalExtension() . '.' . $image->getClientOriginalExtension();
+        $path = 'upload/images/';
+        $image-> move($path,$filename);
+        $post->image = $path . $filename;
+        $post->save();
+
         if (count($request->input('tags')) > 0) {
             foreach ($request->input('tags') as $key => $tag) {
                 $flag = Tag::where('name',$tag)->first();
@@ -43,12 +65,17 @@ class AdminController extends Controller
                     $tag = Tag::create([
                         'name' => $tag
                     ]);
+                    PostTag::create([
+                        'post_id' => $post->id,
+                        'tag_id' => $tag->id
+                    ]);
                 }
             }
         }
-        // upload hình ảnh
-        $image = $request->file('image');
-        $filename = time() . $image->getClientOriginalExtension() . '.' . $image->getClientOriginalExtension();
-        $image-> move('upload/images/',$filename);
+        // PostTag::create([
+        //     'post_id' => $post->id,
+        //     'tag_id' => $tag->id
+        // ]);
+        dd('abc');
     }
 }

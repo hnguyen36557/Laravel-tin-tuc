@@ -45,7 +45,7 @@
 						{{$post->title}}
 					</td>
 					<td>
-						<img class="img-response" src="{{url($post->image)}}" alt="">
+						<img class="img-responsive" width="200" height="200" src="{{url($post->image)}}" alt="">
 					</td>
 					<td>
 						{{date('d-m-Y',strtotime($post->created_ad))}}
